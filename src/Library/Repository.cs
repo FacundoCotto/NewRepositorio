@@ -1,9 +1,11 @@
 //------------------------------------------------------------------------------
-// <copyright file="CarsDatabase.cs" company="Universidad Católica del Uruguay">
+// <copyright file="Repository.cs" company="Universidad Católica del Uruguay">
 //     Copyright (c) Programación II. Derechos reservados.
 // </copyright>
 //------------------------------------------------------------------------------
 
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -12,96 +14,85 @@ using System.Text.Json;
 namespace Ucu.Poo.Repositories
 {
     /// <summary>
-    /// Esta clase representa una base de datos de autos.
+    /// Esta clase representa un catálogo de películas.
     /// </summary>
-    public class CarsDatabase
+    public class Repository<T> : IRepository<T> where T : ISpecificValue
     {
-        private List<Car> cars = new List<Car>();
+        private List<T> items = new List<T>();
 
         /// <summary>
-        /// Obtiene la lista de autos en la base de datos.
+        /// Obtiene la lista de T en la base de datos.
         /// </summary>
-        public ReadOnlyCollection<Car> Cars
+        public ReadOnlyCollection<T> Items
         {
-            get { return this.cars.AsReadOnly(); }
+            get { return this.items.AsReadOnly(); }
         }
 
-        /// <summary>
-        /// Agrega un auto a la base de datos.
-        /// </summary>
-        /// <param name="car">El auto a agregar.</param>
-        public void Add(Car car)
+        public void Add(T item)
         {
-            if (car != null)
+            if (item != null)
             {
-                this.cars.Add(car);
+                this.items.Add(item);
             }
         }
-
-        /// <summary>
-        /// Elimina un auto de la base de datos.
-        /// </summary>
-        /// <param name="car">El auto a remover.</param>
-        public void Remove(Car car)
+        public void Remove(T item)
         {
-            this.cars.Remove(car);
+            this.items.Remove(item);
         }
 
         /// <summary>
-        /// Busca un auto en la base de datos que cumpla con un criterio
+        /// Busca un item que cumpla con un criterio
         /// específico.
         /// </summary>
-        /// <param name="field">El nombre del atributo por el cual
-        /// buscar.</param>
-        /// <param name="value">El valor del atributo por el cual
-        /// buscar.</param>
-        /// <returns>El auto encontrado que cumple el criterio especificado o
-        /// null si no se encuentra ninguno.</returns>
-        public Car Find(string field, string value)
+        /// <param name="field">El nombre del atributo.</param>
+        /// <param name="value">El valor del atributo.</param>
+        /// <returns>El item encontrado que cumple el criterio especificado
+        /// o null si no se encuentra ningun item.</returns>
+        public T Find(string field, string value)
         {
-            foreach (Car car in this.cars)
+            foreach (T item in this.items)
             {
-                if (car.HasValue(field, value))
+                if (item.HasValue(field, value))
                 {
-                    return car;
+                    return item;
                 }
             }
 
-            return null;
+            return default(T);
         }
 
         /// <summary>
-        /// Convierte la base de datos de autos a una representación en formato
+        /// Convierte el almacenamiento de los items a una representación en formato
         /// JSON.
         /// </summary>
-        /// <returns>Una representación de la base de datos en formato
+        /// <returns>Una representación del almacenamiento de los items en formato
         /// JSON.</returns>
         public string ConvertToJson()
         {
-            return JsonSerializer.Serialize(this.cars);
+            return JsonSerializer.Serialize(this.items);
         }
 
         /// <summary>
-        /// Carga la base de datos de autos desde una representación en formato
+        /// Carga el almacenamiento de los items desde una representación en formato
         /// JSON.
         /// </summary>
         /// <param name="content">La representación en formato JSON desde la
-        /// cual cargar la base de datos.</param>
+        /// cual cargar el almacenamiento.</param>
         public void LoadFromJson(string content)
         {
-            List<Car> items = JsonSerializer.Deserialize<List<Car>>(content);
+            List<T> items = JsonSerializer.Deserialize<List<T>>(content);
             if (items != null)
             {
-                this.cars = items;
+                this.items = items;
             }
             else
             {
-                this.cars = new List<Car>();
+                this.items = new List<T>();
             }
         }
 
         /// <summary>
-        /// Guarda la base de datos de autos en un archivo en formato JSON.
+        /// Guarda el almacenamiento de los items en un archivo en formato JSON.
         /// </summary>
         /// <param name="filePath">El nombre del archivo, incluyendo
         /// opcionalmente la ruta.</param>
@@ -112,7 +103,7 @@ namespace Ucu.Poo.Repositories
         }
 
         /// <summary>
-        /// Carga la base de datos de autos desde un archivo en formato JSON.
+        /// Carga el almacenamiento de los items desde un archivo en formato JSON.
         /// </summary>
         /// <param name="filePath">El nombre del archivo, incluyendo
         /// opcionalmente la ruta.</param>

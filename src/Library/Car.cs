@@ -9,7 +9,7 @@ namespace Ucu.Poo.Repositories
     /// <summary>
     /// Esta clase representa un auto.
     /// </summary>
-    public class Car
+    public class Car : ISpecificValue
     {
         /// <summary>
         /// Inicializa una nueva instancia de la clase <see cref="Car"/>.
